@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment Receipt</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+   
+    body {
+      background-color: #fff;
+    }
+
+    .receipt-container {
+      background-color: #fff; 
+      padding: 20px;
+      margin-top: 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    #thank-you-message {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    hr {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation bar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark p-3">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">OLMS</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    
+      <div class=" collapse navbar-collapse" id="navbarNavDropdown">
+        <ul class="navbar-nav ms-auto ">
+          <li class="nav-item">
+            <a class="nav-link mx-2 active" aria-current="page" href="index.html">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link mx-2" href="cart.html">Cart</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link mx-2" href="categories.html">Categories</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link mx-2" href="payment.html">Payment</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link mx-2" href="contact.html">Contact</a>
+          </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+    </nav>
+
+  <!-- Receipt content -->
+  <div class="container receipt-container">
+    <h1>Payment Receipt</h1>
+    
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Price</th>
+        </tr>
+      </thead>
+      <tbody id="receipt-table">
+        <!-- Receipt items will be displayed here using JavaScript -->
+      </tbody>
+    </table>
+    <div id="total-amount">
+      <!-- Total amount will be displayed here using JavaScript -->
+    </div>
+  </div><!-- Return to Home page link -->
+  <div class="container mt-4">
+    <a class="btn btn-primary" href="index.html">Return to Home</a>
+  </div>
+  <br>
+  <br>
+  <br>
+  <h3 style="text-align: center; padding: 20px">Thank You For Shopping, We Hope You'll like these books</h3>
+  <br>
+  <br>
+  
+  <footer class="bg-body-tertiary text-center text-lg-start">
+    <!-- Copyright -->
+    <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.05);">
+     Copyrights by OnlineLibrary
+      
+    </div>
+    <!-- Copyright -->
+  </footer>
+  <script>
+    // Function to fetch pricing details from book.json
+    async function fetchBookData() {
+      try {
+        const response = await fetch('book.json'); // Assuming 'book.json' is in the same directory
+        const data = await response.json();
+        return data;
+      } catch (error) {
+        console.error('Error fetching book data:', error);
+        return [];
+      }
+    }
+
+    // Function to display the payment receipt
+    async function displayPaymentReceipt() {
+      const receiptTable = document.getElementById('receipt-table');
+      receiptTable.innerHTML = '';
+
+      const totalAmount = document.getElementById('total-amount');
+      totalAmount.innerHTML = '';
+
+      // Retrieve cart items from local storage
+      const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+
+      // Fetch pricing details from book.json
+      const bookData = await fetchBookData();
+
+      let totalPrice = 0;
+
+      // Iterate through the cart items
+      cartItems.forEach((cartItem) => {
+        const book = bookData.find((item) => item.title === cartItem.title);
+        if (book) {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${book.title}</td>
+            <td>$${book.price.toFixed(2)}</td>
+          `;
+          receiptTable.appendChild(row);
+
+          totalPrice += book.price * cartItem.quantity;
+        }
+      });
+
+      totalAmount.innerHTML = `<p>Total Amount: $${totalPrice.toFixed(2)}</p>`;
+    }
+
+    // Call the function to display the payment receipt after the page is fully loaded
+    document.addEventListener('DOMContentLoaded', displayPaymentReceipt);
+  </script>
+</body>
+</html>
